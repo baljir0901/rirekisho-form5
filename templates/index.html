@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>履歴書フォーム</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>履歴書</h1>
+        <form id="rirekishoForm" onsubmit="submitForm(event)">
+            <!-- Basic Information -->
+            <section>
+                <h2>基本情報</h2>
+                <div class="form-group">
+                    <label>フリガナ</label>
+                    <div class="name-fields">
+                        <input type="text" id="furigana_surname" placeholder="姓">
+                        <input type="text" id="furigana_given" placeholder="名">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>ローマ字</label>
+                    <div class="name-fields">
+                        <input type="text" id="romaji_surname" placeholder="Surname">
+                        <input type="text" id="romaji_given" placeholder="Given name">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>生年月日</label>
+                    <input type="date" id="birthdate" onchange="calculateAge(this.value)">
+                </div>
+
+                <div class="form-group">
+                    <label>年齢</label>
+                    <input type="number" id="age" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>性別</label>
+                    <select id="gender">
+                        <option value="">選択してください</option>
+                        <option value="男">男</option>
+                        <option value="女">女</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>国籍</label>
+                    <input type="text" id="nationality">
+                </div>
+
+                <div class="form-group">
+                    <label>最寄り駅</label>
+                    <input type="text" id="nearest_station">
+                </div>
+
+                <div class="form-group">
+                    <label>住所</label>
+                    <input type="text" id="postal_code" placeholder="郵便番号">
+                    <input type="text" id="address" placeholder="詳細住所">
+                </div>
+
+                <div class="form-group">
+                    <label>連絡先</label>
+                    <input type="tel" id="phone" placeholder="電話番号">
+                    <input type="email" id="email" placeholder="メールアドレス">
+                </div>
+            </section>
+
+            <!-- Interview Dates -->
+            <section>
+                <h2>面接希望日</h2>
+                <div class="form-group">
+                    <label>第一希望</label>
+                    <input type="date" id="interview_date_1">
+                </div>
+                <div class="form-group">
+                    <label>第二希望</label>
+                    <input type="date" id="interview_date_2">
+                </div>
+                <div class="form-group">
+                    <label>第三希望</label>
+                    <input type="date" id="interview_date_3">
+                </div>
+            </section>
+
+            <!-- Education History -->
+            <section>
+                <h2>学歴</h2>
+                <div id="education-container">
+                    <!-- Dynamic education entries will be added here -->
+                </div>
+                <button type="button" onclick="addEducationEntry()">学歴を追加</button>
+            </section>
+
+            <!-- Work History -->
+            <section>
+                <h2>職歴</h2>
+                <div id="work-container">
+                    <!-- Dynamic work entries will be added here -->
+                </div>
+                <button type="button" onclick="addWorkEntry()">職歴を追加</button>
+            </section>
+
+            <!-- Visa Information -->
+            <section>
+                <h2>在留資格情報</h2>
+                <div class="form-group">
+                    <label>在留資格</label>
+                    <input type="text" id="visa_status">
+                </div>
+                <div class="form-group">
+                    <label>在留期限</label>
+                    <input type="date" id="visa_expiry">
+                </div>
+            </section>
+
+            <!-- Technical Intern History -->
+            <section>
+                <h2>技能実習生としての在留歴</h2>
+                <div id="intern-history-container">
+                    <!-- Dynamic intern history entries will be added here -->
+                </div>
+                <button type="button" onclick="addInternHistory()">在留歴を追加</button>
+            </section>
+
+            <!-- Family in Japan -->
+            <section>
+                <h2>日本にいる親族の有無</h2>
+                <div class="form-group">
+                    <label>親族の有無</label>
+                    <div class="radio-group">
+                        <input type="radio" id="family_yes" name="has_family" value="true">
+                        <label for="family_yes">有</label>
+                        <input type="radio" id="family_no" name="has_family" value="false">
+                        <label for="family_no">無</label>
+                    </div>
+                </div>
+
+                <div id="family-details" style="display: none;">
+                    <div class="form-group">
+                        <label>同居の有無</label>
+                        <div class="radio-group">
+                            <input type="radio" id="lives_together_yes" name="lives_together" value="true">
+                            <label for="lives_together_yes">有</label>
+                            <input type="radio" id="lives_together_no" name="lives_together" value="false">
+                            <label for="lives_together_no">無</label>
+                        </div>
+                    </div>
+
+                    <div id="family-container">
+                        <!-- Dynamic family member entries will be added here -->
+                    </div>
+                    <button type="button" onclick="addFamilyMember()">親族を追加</button>
+                </div>
+            </section>
+
+            <!-- Home Country Information -->
+            <section>
+                <h2>母国の情報</h2>
+                <div id="home-country-container">
+                    <!-- Dynamic home country contact entries will be added here -->
+                </div>
+                <button type="button" onclick="addHomeCountryContact()">連絡先を追加</button>
+            </section>
+
+            <!-- Allergies -->
+            <section>
+                <h2>アレルギー</h2>
+                <div class="form-group">
+                    <label>アレルギーの有無</label>
+                    <div class="radio-group">
+                        <input type="radio" id="allergy_yes" name="has_allergies" value="true">
+                        <label for="allergy_yes">有</label>
+                        <input type="radio" id="allergy_no" name="has_allergies" value="false">
+                        <label for="allergy_no">無</label>
+                    </div>
+                </div>
+
+                <div id="allergy-details" style="display: none;">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="allergy_medicine" name="allergy_types">
+                        <label for="allergy_medicine">薬</label>
+
+                        <input type="checkbox" id="allergy_food" name="allergy_types">
+                        <label for="allergy_food">食べ物</label>
+
+                        <input type="checkbox" id="allergy_metal" name="allergy_types">
+                        <label for="allergy_metal">金属</label>
+
+                        <input type="checkbox" id="allergy_plant" name="allergy_types">
+                        <label for="allergy_plant">植物</label>
+
+                        <input type="checkbox" id="allergy_other" name="allergy_types">
+                        <label for="allergy_other">その他</label>
+                    </div>
+                </div>
+
+                <div class="form-group allergy-names" style="display: none;">
+                    <label>アレルギーの名前:</label>
+                    <input type="text" id="allergy_names" placeholder="アレルギーの名前を入力してください">
+                </div>
+            </section>
+
+            <!-- Self PR -->
+            <section>
+                <h2>自己PR・趣味・特技</h2>
+                <textarea id="self_pr" rows="4"></textarea>
+            </section>
+
+            <!-- Physical Information -->
+            <section>
+                <h2>身体情報</h2>
+                <div class="form-group">
+                    <label>身長 (cm)</label>
+                    <input type="number" id="height" min="100" max="250">
+                </div>
+
+                <div class="form-group">
+                    <label>体重 (kg)</label>
+                    <input type="number" id="weight" min="30" max="200">
+                </div>
+
+                <div class="form-group">
+                    <label>靴のサイズ (cm)</label>
+                    <input type="number" id="shoe_size" min="20" max="35">
+                </div>
+
+                <div class="form-group">
+                    <label>服のサイズ (上)</label>
+                    <select id="clothes_size_top">
+                        <option value="S">S</option>
+                        <option value="M">M</option>
+                        <option value="L">L</option>
+                        <option value="XL">XL</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>服のサイズ (下)</label>
+                    <select id="clothes_size_bottom">
+                        <option value="S">S</option>
+                        <option value="M">M</option>
+                        <option value="L">L</option>
+                        <option value="XL">XL</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>血液型</label>
+                    <select id="blood_type">
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="O">O</option>
+                        <option value="AB">AB</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>ウエスト (cm)</label>
+                    <input type="number" id="waist" min="50" max="150">
+                </div>
+            </section>
+
+            <button type="submit" class="submit-button">送信</button>
+        </form>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
